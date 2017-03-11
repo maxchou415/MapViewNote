@@ -19,6 +19,29 @@
       }
 
       function mapDidChanged() {
+        getMsgsByGeo();
+        getHotels();
+      }
+
+      function getHotels() {
+        var urlStr = "https://distribution-xml.booking.com/json/bookings.getHotels?city_ids=-2637882";
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', urlStr);
+        xhr.setRequestHeader("Authorization", "Basic " + btoa("hacker234:8hqNW6HtfU"));
+        xhr.onload = function() {
+          if (xhr.status !== 200) {
+            alert("/bookings.getHotels failed:\n" + xhr.status + ": " + xhr.responseText);
+            return;
+          }
+          var hotelsArray = JSON.parse(xhr.responseText);
+          hotelsArray.forEach(function(hotelJSON) {
+            googleMapsHotelMarker(hotelJSON);
+          });
+        }
+        xhr.send();
+      }
+
+      function getMsgsByGeo() {
          var centerPoint = map.getCenter();
          var swnePoints = map.getBounds();
          var swPoint = swnePoints.getSouthWest();
@@ -72,6 +95,28 @@
          message += "Time: " + time + "<br>";
          message += "Username: " + msgJSON.User.Name + "<br>";
          message += "Message: " + msgJSON.Body+ "</p>";
+         message += "</div>";
+         var msgMarkerInfoWindow = new google.maps.InfoWindow({
+           content: message
+         });
+         msgMarker.addListener('click', function() {
+           msgMarkerInfoWindow.open(map, msgMarker);
+         });
+           return msgMarker;
+       }
+
+       function googleMapsHotelMarker(hotelJSON) {
+         var image = 'message-2-32.png'; /* Public domain icon, from http://www.iconsdb.com/soylent-red-icons/message-2-icon.html */
+         var msgMarker = new google.maps.Marker({
+           position: {
+             lat: hotelJSON.location.latitude,
+             lng: hotelJSON.location.longitude
+           },
+           map: map,
+           icon: image
+         });
+         var message = "<div style='text-align: left; font-size: 12px'> ";
+         message += "Name: " + hotelJSON.name;
          message += "</div>";
          var msgMarkerInfoWindow = new google.maps.InfoWindow({
            content: message
