@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
   <body>
-    <div id="map" style="height: 400px; width: 100%"></div>
+    <div id="map" style="height: 500px; width: 100%"></div>
+    <div id="side-panel" style="position: absolute; right: 15px; top: 15px; width: 300px; height: 450px; background-color: green;"></div>
+
     <script>
       var map;
       var mapMessages = new Object();
@@ -115,14 +120,18 @@
            map: map,
            icon: image
          });
-         var message = "<div style='text-align: left; font-size: 12px'> ";
-         message += "Name: " + hotelJSON.name;
-         message += "</div>";
-         var msgMarkerInfoWindow = new google.maps.InfoWindow({
-           content: message
-         });
          msgMarker.addListener('click', function() {
-           msgMarkerInfoWindow.open(map, msgMarker);
+           var sidePanel = document.getElementById("side-panel");
+           $("#side-panel").fadeToggle( "fast", "linear", function() {	// old panel disappear
+             while (sidePanel.firstChild) {
+               sidePanel.removeChild(sidePanel.firstChild);	        // remove old data
+             }
+             var para = document.createElement('p');
+             para.appendChild(document.createTextNode(hotelJSON.name));
+             sidePanel.appendChild(para);                               // append new data
+
+             $("#side-panel").fadeToggle( "fast", "linear" );           // new panel appear
+           } );
          });
            return msgMarker;
        }
