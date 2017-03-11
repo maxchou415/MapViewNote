@@ -121,7 +121,7 @@
        }
 
        function googleMapsDataMarker(dataJSON) {
-         var image = 'message-2-32.png'; /* Public domain icon, from http://www.iconsdb.com/soylent-red-icons/message-2-icon.html */
+         var image = dataJSON.imageURL;
          var lat = parseFloat(dataJSON.lat);
          var lng = parseFloat(dataJSON.lng);
          if (isNaN(lat) || isNaN(lng)) {
