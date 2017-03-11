@@ -7,7 +7,7 @@
   </head>
   <body>
     <div id="map" style="height: 500px; width: 100%"></div>
-    <div id="side-panel" style="position: absolute; right: 15px; top: 15px; width: 300px; height: 450px; background-color: green;"></div>
+    <div id="side-panel" style="position: absolute; right: 15px; top: 15px; width: 471px; height: 555px; background-image: url('note_bg.png');"></div>
 
     <script>
       var map;
@@ -40,12 +40,12 @@
 
       function mapDidChanged() {
         // getMsgsByGeo();
-        // getHotels();
-        getDataFromMax();
+        getHotels();
+        // getDataFromMax();
       }
 
       function getDataFromMax() {
-        var urlStr = "http://10.187.0.151:3000/api/all/" ;
+        var urlStr = "http://128.199.103.142:3000/api/all/" ;
         var xhr = new XMLHttpRequest();
         xhr.open('GET', urlStr);
         xhr.onload = function() {
@@ -67,7 +67,7 @@
       }
 
       function getHotels() {
-        var urlStr = "http://10.187.0.151:3000/api/booking/all/";  // server request with auth: /bookings.getHotels?city_ids=-2637882
+        var urlStr = "http://128.199.103.142:3000/api/booking/all/";  // server request with auth: /bookings.getHotels?city_ids=-2637882
         var xhr = new XMLHttpRequest();
         xhr.open('GET', urlStr);
         xhr.onload = function() {
@@ -136,17 +136,20 @@
            map: map,
            icon: image
          });
-         var message = "<div style='text-align: left; font-size: 12px'> ";
-         message += dataJSON.description;
-         message += "</div>";
-         var msgMarkerInfoWindow = new google.maps.InfoWindow({
-           content: message
-         });
          msgMarker.addListener('click', function() {
-           msgMarkerInfoWindow.open(map, msgMarker);
+           var sidePanel = document.getElementById("side-panel");
+           $("#side-panel").fadeToggle( "fast", "linear", function() {	// old panel disappear
+             while (sidePanel.firstChild) {
+               sidePanel.removeChild(sidePanel.firstChild);	        // remove old data
+             }
+             var para = document.createElement('p');
+             para.appendChild(document.createTextNode(dataJSON.name));
+             sidePanel.appendChild(para);                               // append new data
+
+             $("#side-panel").fadeToggle( "fast", "linear" );           // new panel appear
+           });
          });
            return msgMarker;
-
        }
 
        function googleMapsMessageMarker(msgJSON) {
@@ -177,7 +180,7 @@
        }
 
        function googleMapsHotelMarker(hotelJSON) {
-         var image = 'message-2-32.png'; /* Public domain icon, from http://www.iconsdb.com/soylent-red-icons/message-2-icon.html */
+         var image = 'booking.png';
          var msgMarker = new google.maps.Marker({
            position: {
              lat: hotelJSON.location.latitude,
@@ -186,21 +189,20 @@
            map: map,
            icon: image
          });
+         var message = "<div style='width: 433px; height: 149px;'> ";
+         message += "<span style='display: block; position: absolute; left: 247px; top: 15px; font-size: 20px; font-weight: bold; font-family: Avenir Next;'>"+ hotelJSON.name +"</span>";
+         message += "<button style='display: block; position: absolute; left: 212px; top: 100px; width: 144px; height: 40px; border-radius: 20px; font-size: 16px; font-family: Avenir Next; color: white; background-color: #0F347E' type='button' class='btn btn-default'  onclick='window.location.href=\"" + hotelJSON.url +"\"'>Booking Now</button>";
+         message += "<img style='display: block; position: absolute; left: 6px; top: 12px; height: 128px' src='1475796.jpg'>";
+         message += "<img style='display: block; position: absolute; left: 213px; top: 15px; height: 26px' src='booking.png'>";
+         message += "</div>";
+         var msgMarkerInfoWindow = new google.maps.InfoWindow({
+           content: message
+         });
          msgMarker.addListener('click', function() {
-           var sidePanel = document.getElementById("side-panel");
-           $("#side-panel").fadeToggle( "fast", "linear", function() {	// old panel disappear
-             while (sidePanel.firstChild) {
-               sidePanel.removeChild(sidePanel.firstChild);	        // remove old data
-             }
-             var para = document.createElement('p');
-             para.appendChild(document.createTextNode(hotelJSON.name));
-             sidePanel.appendChild(para);                               // append new data
-
-             $("#side-panel").fadeToggle( "fast", "linear" );           // new panel appear
-           } );
+           msgMarkerInfoWindow.open(map, msgMarker);
          });
            return msgMarker;
-       }
+                }
 
 
     </script>
