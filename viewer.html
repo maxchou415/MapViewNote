@@ -29,10 +29,9 @@
       }
 
       function getHotels() {
-        var urlStr = "https://distribution-xml.booking.com/json/bookings.getHotels?city_ids=-2637882";
+        var urlStr = "http://10.187.0.151:3000/api/booking/all/";  // server request with auth: /bookings.getHotels?city_ids=-2637882
         var xhr = new XMLHttpRequest();
         xhr.open('GET', urlStr);
-        xhr.setRequestHeader("Authorization", "Basic " + btoa("hacker234:8hqNW6HtfU"));
         xhr.onload = function() {
           if (xhr.status !== 200) {
             alert("/bookings.getHotels failed:\n" + xhr.status + ": " + xhr.responseText);
