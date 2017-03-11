@@ -12,6 +12,7 @@
     <script>
       var map;
       var mapMessages = new Object();
+      var mapData = new Object();
 
       function initMap() {
         // Create a map object and specify the DOM element for display.
@@ -21,11 +22,48 @@
           zoom: 16 
         });
         map.addListener('idle', mapDidChanged)
+        var styles = {
+          hide: [
+            {
+              featureType: 'poi',
+              stylers: [{visibility: 'off'}]
+            },
+            {
+              featureType: 'transit',
+              elementType: 'labels.icon',
+              stylers: [{visibility: 'off'}]
+            }
+          ]
+        };
+        map.setOptions({styles: styles['hide']});
       }
 
       function mapDidChanged() {
-        getMsgsByGeo();
-        getHotels();
+        // getMsgsByGeo();
+        // getHotels();
+        getDataFromMax();
+      }
+
+      function getDataFromMax() {
+        var urlStr = "http://10.187.0.151:3000/api/all/" ;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', urlStr);
+        xhr.onload = function() {
+          if (xhr.status !== 200) {
+            alert("/bookings.getHotels failed:\n" + xhr.status + ": " + xhr.responseText);
+            return;
+          }
+          var responseObj = JSON.parse(xhr.responseText);
+          var dataArray = responseObj.data;
+          dataArray.forEach(function(dataJSON) {
+             var dataID = dataJSON["_id"];
+             if (!(dataID in mapData)) {
+               var dataMarker = googleMapsDataMarker(dataJSON);
+               mapData[dataID] = dataMarker;
+             }
+          });
+        }
+        xhr.send();
       }
 
       function getHotels() {
@@ -80,6 +118,35 @@
            });
          }
          xhr.send();
+       }
+
+       function googleMapsDataMarker(dataJSON) {
+         var image = 'message-2-32.png'; /* Public domain icon, from http://www.iconsdb.com/soylent-red-icons/message-2-icon.html */
+         var lat = parseFloat(dataJSON.lat);
+         var lng = parseFloat(dataJSON.lng);
+         if (isNaN(lat) || isNaN(lng)) {
+           alert("server lat or lng wrong format");
+           return;
+         }
+         var msgMarker = new google.maps.Marker({
+           position: {
+             lat: lat,
+             lng: lng
+           },
+           map: map,
+           icon: image
+         });
+         var message = "<div style='text-align: left; font-size: 12px'> ";
+         message += dataJSON.description;
+         message += "</div>";
+         var msgMarkerInfoWindow = new google.maps.InfoWindow({
+           content: message
+         });
+         msgMarker.addListener('click', function() {
+           msgMarkerInfoWindow.open(map, msgMarker);
+         });
+           return msgMarker;
+
        }
 
        function googleMapsMessageMarker(msgJSON) {
