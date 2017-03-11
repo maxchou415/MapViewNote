@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+  </head>
+  <body>
+    <form id="upload" class="" action="" method="post" enctype="multipart/form-data">
+      <input type="text" name="" placeholder="...">
+      <input type="file" name="" value="">
+    </form>
+  </body>
+  <script>
+  $("#upload").submit(function(event) {
+    event.preventDefault();
+    var $form = $(this),
+    text = $form.find("input[type='text']").val(),
+    url = $form.attr("action");
+
+    var posting = $.post(url);
+
+    posting.done(function(data){
+      console.log(data);
+    });
+
+  })
+  </script>
+</html>
