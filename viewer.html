@@ -12,7 +12,7 @@
         // Create a map object and specify the DOM element for display.
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 25.045354839491246, lng: 121.5311050415039},
-          scrollwheel: false,
+          scrollwheel: true,
           zoom: 16 
         });
         map.addListener('idle', mapDidChanged)
