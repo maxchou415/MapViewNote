@@ -4,27 +4,71 @@
     <meta charset="utf-8">
     <title></title>
     <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <form id="upload" class="" action="" method="post" enctype="multipart/form-data">
-      <input type="text" name="" placeholder="...">
-      <input type="file" name="" value="">
-      <input type="submit" value="Upload">
-    </form>
+
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+      Upload
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="upload" class="" action="http://10.187.0.151:3000/api/create" method="post" enctype="multipart/form-data">
+              <input type="text" name="description" placeholder="...">
+              <input type="text" name="lng" placeholder="lng">
+              <input type="text" name="lat" placeholder="lat">
+              <input type="file" name="photos" value="">
+            </form>
+          </div>
+          <div class="modal-footer">
+            <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+            <button id="modal-upload" type="button" class="btn btn-primary" data-loading-text="Loading...">Upload</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
   <script>
-  $("#upload").submit(function(event) {
-    event.preventDefault();
-    var $form = $(this),
-    text = $form.find("input[type='text']").val(),
-    url = $form.attr("action");
+    $('#modal-upload').on('click', function () {
+      var $btn = $(this).button('loading')
+    })
 
-    var posting = $.post(url);
+    $("#modal-upload").click(function(data){
+      var form = new FormData($("#upload")[0]);
+      $.ajax({
+              url: 'http://10.187.0.151:3000/api/create',
+              method: "POST",
+              dataType: 'json',
+              data: form,
+              processData: false,
+              contentType: false,
+              success: function(result){
+                if(!result) {
 
-    posting.done(function(data){
-      console.log(data);
+                } else {
+                  $('#myModal').modal('hide')
+                }
+              },
+              error: function(er){
+                console.log(er)
+              }
+      });
     });
 
-  })
   </script>
 </html>
