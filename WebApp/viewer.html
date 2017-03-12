@@ -75,7 +75,7 @@
       <div id="title" style="margin: 0 auto; padding-top: 14px; color: white; font-family: Helvetica Neue; font-size: 24px; font-weight: bold">Journey <span style="color: #e82c36">NoteMap<span></div>
     </div>
     <div id="map" style="height: 600px; width: 100%"></div>
-    <div id="side-panel" style="position: absolute; right: 15px; top: 85px; width: 471px; height: 555px; background-image: url('note_bg.png');">
+    <div id="side-panel" style="position: absolute; right: 15px; top: 85px; width: 471px; height: 555px; background-image: url('note_bg.png'); visibility:hidden">
       <img id="side-img" src="1475796.jpg"/>
       <div class="info_div" style="padding-top: 10px; margin-left: 15px; margin-right: 15px">
         <img src="icon_pin.png" style="padding-top: 7px; padding-bottom: 7px" />
@@ -97,7 +97,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <form id="upload" class="" action="http://10.187.0.151:3000/api/create" method="post" enctype="multipart/form-data">
+            <form id="upload" class="" action="http://10.187.0.131:3000/api/create" method="post" enctype="multipart/form-data">
               <label for="photos" class="photos-file-upload">
                 <img id="preview" src="upload_photo.png" />
               </label>
@@ -350,7 +350,7 @@
             var form = new FormData($("#upload")[0]);
             console.log(form)
             $.ajax({
-                    url: 'http://10.187.0.151:3000/api/create',
+                    url: 'http://10.187.0.131:3000/api/create',
                     method: "POST",
                     dataType: 'json',
                     data: form,
