@@ -3,7 +3,53 @@
   <head>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <style>
+      .modal-header {
+        border-bottom:0px
+      }
+
+      .modal-footer {
+        border-top:0px
+      }
+
+      input[type="file"] {
+        visibility: hidden;
+      }
+
+      .photos-file-upload {
+        cursor: pointer;
+        text-align: center;
+        min-width: 100%;
+      }
+
+      #preview {
+        text-align: center;
+        max-width: 100%;
+        max-height: 205px;
+      }
+
+      #modal-upload {
+        border-radius: 24px;
+        padding-left: 25px;
+        padding-right: 25px;
+        background-color: #ef4445;
+        border-color: #ef4445;
+      }
+
+      #modal-upload:hover, #modal-upload:focus, #modal-upload:active {
+        background-color: #ab3131;
+        border-color: #ab3131; /*set the color you want here*/
+      }
+
+      #desc {
+        border-width: 0px;
+        min-width: 100%;
+        min-height: 100px;
+        padding:0 5px 100px;
+      }
+    </style>
   </head>
   <body>
     <div id="header" style="width: 100%; height: 63px; background-color: #4A4A4A; text-align: center">
@@ -12,7 +58,37 @@
     <div id="map" style="height: 600px; width: 100%"></div>
     <div id="side-panel" style="position: absolute; right: 15px; top: 85px; width: 471px; height: 555px; background-image: url('note_bg.png');"></div>
     <div id="footer" style="position: relative; width: 100%; height: 106px; background-color: #4A4A4A">
-      <button style="position: absolute; bottom: 0; left: 45%; width: 113px; height: 130px; background-color: #e82c36; color: white; font-family: Helvetica Neue;"><span style="font-size: 60px">+</span><br><span style="font-size: 24px; font-weight: bold; font-family: Avenir Next">Add</span></button>
+      <button data-toggle="modal" data-target="#myModal" style="position: absolute; bottom: 0; left: 45%; width: 113px; height: 130px; background-color: #e82c36; color: white; font-family: Helvetica Neue;"><span style="font-size: 60px">+</span><br><span style="font-size: 24px; font-weight: bold; font-family: Avenir Next">Add</span></button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="upload" class="" action="http://10.187.0.151:3000/api/create" method="post" enctype="multipart/form-data">
+              <label for="photos" class="photos-file-upload">
+                <img id="preview" src="upload_photo.png" />
+              </label>
+              <input id="photos" type="file" name="photos" onchange="readURL(this);" />
+
+              <input id="desc" type="text" name="description" placeholder="Add your note here..." />
+              <input type="text" name="lng" placeholder="lng" style="display: none" />
+              <input type="text" name="lat" placeholder="lat" style="display: none" />
+
+            </form>
+          </div>
+          <div class="modal-footer">
+            <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+            <button id="modal-upload" type="button" class="btn btn-primary" data-loading-text="Loading...">Submit</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -25,7 +101,7 @@
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 25.045354839491246, lng: 121.5311050415039},
           scrollwheel: true,
-          zoom: 16 
+          zoom: 16
         });
         map.addListener('idle', mapDidChanged)
         var styles = {
@@ -210,7 +286,59 @@
            return msgMarker;
                 }
 
+          function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
 
+                reader.onload = function (e) {
+                    $('#preview')
+                        .attr('src', e.target.result)
+                        .attr("style", "visibility: visible");
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+          }
+          // $('#photos').change(function(){
+          //   var input = $('#photos');
+          //   console.log(input.val());
+          //   if (input.files && input.files[0]) {
+          //     var reader = new FileReader();
+          //
+          //     reader.onload = function (e) {
+          //       $('#preview').attr('src', e.target.result);
+          //       console.log("111");
+          //     }
+          //
+          //     reader.readAsDataURL(input.files[0]);
+          //   }
+          // });
+          $('#modal-upload').on('click', function () {
+            var $btn = $(this).button('loading')
+          })
+
+          $("#modal-upload").click(function(data){
+            var form = new FormData($("#upload")[0]);
+            console.log(form)
+            $.ajax({
+                    url: 'http://10.187.0.151:3000/api/create',
+                    method: "POST",
+                    dataType: 'json',
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    success: function(result){
+                      if(!result) {
+
+                      } else {
+                        $('#myModal').modal('hide')
+                      }
+                    },
+                    error: function(er){
+                      console.log(er)
+                    }
+            });
+          });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key= AIzaSyD3r5tn217etQ0WWDLiDpjhdHqxEwJ5gkI&callback=initMap"
     async defer></script>
